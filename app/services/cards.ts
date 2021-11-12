@@ -18,7 +18,7 @@ const client = axios.create({
 
 export async function getCardsInfo(): Promise<CardsInfo> {
   try {
-    const response = await client.get<CardsInfo[]>('info');
+    const response = await client.get<CardsInfo>('info');
     return response.data;
   } catch (error) {
     logger.error(`getCardsInfo Error ${error}`);
