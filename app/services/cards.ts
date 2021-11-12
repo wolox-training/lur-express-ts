@@ -22,7 +22,7 @@ export async function getCardsInfo(): Promise<CardsInfo> {
     return response.data;
   } catch (error) {
     logger.error(`getCardsInfo Error ${error}`);
-    throw new externalApiError(`External Api Error ${error}`);
+    throw externalApiError(`External Api Error ${error}`);
   }
 }
 
@@ -32,7 +32,7 @@ export async function getAllCards(): Promise<Cards[]> {
     return response.data;
   } catch (error) {
     logger.error(`getCardsInfo Error ${error}`);
-    throw new externalApiError(`External Api Error ${error}`);
+    throw externalApiError(`External Api Error ${error}`);
   }
 }
 
