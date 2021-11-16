@@ -3,7 +3,12 @@ import userRepository from '../app/services/users';
 import app from '../app';
 
 describe('users', () => {
-  beforeEach(() => userRepository.createMany([{ username: 'u1' }, { username: 'u2' }]));
+  beforeEach(() =>
+    userRepository.createMany([
+      { name: 'n1', lastname: 'l1', email: 'example1@email.com', password: 'example123' },
+      { name: 'n2', lastname: 'l2', email: 'example2@email.com', password: 'example123' }
+    ])
+  );
   describe('/users GET', () => {
     it('should return all users', (done: jest.DoneCallback) => {
       request(app)
@@ -19,10 +24,10 @@ describe('users', () => {
     it('should create an user', (done: jest.DoneCallback) => {
       request(app)
         .post('/users')
-        .send({ username: 'u3' })
+        .send({ name: 'n3', lastname: 'l3', email: 'example3@email.com', password: 'example123' })
         .expect(201)
         .then(async () => {
-          const user = await userRepository.findUser({ username: 'u3' });
+          const user = await userRepository.findUser({ email: 'example3@email.com' });
           expect(user).not.toBeNull();
           done();
         });
@@ -33,7 +38,7 @@ describe('users', () => {
           .get('/users/1')
           .expect(200)
           .then((res: request.Response) => {
-            expect(res.body).toHaveProperty('username');
+            expect(res.body).toHaveProperty('email');
             expect(res.body).toHaveProperty('id');
             done();
           });
