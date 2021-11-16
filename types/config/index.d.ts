@@ -34,4 +34,8 @@ export interface IConfig {
   todos: {
     baseURL: ENV_VAR;
   };
+  heartstone: {
+    baseURL: ENV_VAR;
+    APIKey: ENV_VAR;
+  };
 }

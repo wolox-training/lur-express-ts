@@ -58,6 +58,10 @@ const config: IConfig = {
   },
   todos: {
     baseURL: process.env.TODOS_API_BASE_URL || 'https://jsonplaceholder.typicode.com'
+  },
+  heartstone: {
+    baseURL: process.env.HEARTSTONE_API,
+    APIKey: process.env.HEARTSTONE_API_KEY
   }
 };
 
