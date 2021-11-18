@@ -1,34 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
 import HttpStatus from 'http-status-codes';
-
 import userService from '../services/users';
 import { User } from '../models/user';
 import { notFoundError } from '../errors';
-import {userValidations} from "../utils/users";
+import { userValidations, passwordEncrypt } from '../utils/users';
+import logger from '../logger';
 
 export function getUsers(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
   return userService
     .findAll()
     .then((users: User[]) => res.send(users))
-    .catch(next);
-}
-
-export function createUser(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
-  const { firstName, lastName, email, password } = req.body;
-
-  if(!firstName || !lastName || !email || !password)
-      res.status(HttpStatus.BAD_REQUEST).send({message: 'firstName, lastName, email and password are required'})
-
-  const pendingValidations = userValidations(firstName, lastName, email, password)
-    if(pendingValidations)
-        res.status(HttpStatus.BAD_REQUEST).send({message: pendingValidations})
-
-  userService
-    .createUser({ firstName, lastName, email, password } as User)
-    .then((user: User) => {
-        
-        res.status(HttpStatus.CREATED).send({ user }))
-    }
     .catch(next);
 }
 
@@ -42,4 +23,38 @@ export function getUserById(req: Request, res: Response, next: NextFunction): Pr
       return res.send(user);
     })
     .catch(next);
+}
+
+// eslint-disable-next-line consistent-return
+export async function createUser(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+  const { firstName, lastName, email, password } = req.body;
+
+  if (!firstName || !lastName || !email || !password) {
+    return res
+      .status(HttpStatus.BAD_REQUEST)
+      .send({ message: 'firstName, lastName, email and password are required' });
+  }
+
+  const pendingValidations = await userValidations(firstName, lastName, email, password);
+
+  if (pendingValidations) {
+    logger.error(`createUser: user creation failed ${pendingValidations}`);
+    return res.status(HttpStatus.BAD_REQUEST).send({ message: pendingValidations });
+  }
+
+  userService
+    .createAndSave({
+      firstName,
+      lastName,
+      email,
+      password: passwordEncrypt(password)
+    } as User)
+    .then((userCreated: User) => {
+      logger.info(`createUser: user ${email} created`);
+      res.status(HttpStatus.CREATED).send({ userCreated });
+    })
+    .catch(() => {
+      logger.error('createUser: error saving to database');
+      next();
+    });
 }
