@@ -4,6 +4,7 @@ import HttpStatus from 'http-status-codes';
 import userService from '../services/users';
 import { User } from '../models/user';
 import { notFoundError } from '../errors';
+import {userValidations} from "../utils/users";
 
 export function getUsers(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
   return userService
@@ -14,9 +15,20 @@ export function getUsers(req: Request, res: Response, next: NextFunction): Promi
 
 export function createUser(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
   const { firstName, lastName, email, password } = req.body;
-  return userService
-    .createAndSave({ firstName, lastName, email, password } as User)
-    .then((user: User) => res.status(HttpStatus.CREATED).send({ user }))
+
+  if(!firstName || !lastName || !email || !password)
+      res.status(HttpStatus.BAD_REQUEST).send({message: 'firstName, lastName, email and password are required'})
+
+  const pendingValidations = userValidations(firstName, lastName, email, password)
+    if(pendingValidations)
+        res.status(HttpStatus.BAD_REQUEST).send({message: pendingValidations})
+
+  userService
+    .createUser({ firstName, lastName, email, password } as User)
+    .then((user: User) => {
+        
+        res.status(HttpStatus.CREATED).send({ user }))
+    }
     .catch(next);
 }
 
