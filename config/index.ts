@@ -61,6 +61,7 @@ const config: IConfig = {
   },
   heartstone: {
     baseURL: process.env.HEARTSTONE_API,
+    host: process.env.HEARTSTONE_HOST,
     APIKey: process.env.HEARTSTONE_API_KEY
   }
 };
