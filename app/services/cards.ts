@@ -5,13 +5,14 @@ import logger from '../logger';
 import { CardsInfo, Cards } from '../types/cards';
 
 export const BASE_URL = config.heartstone.baseURL as string;
+export const HOST = config.heartstone.host as string;
 export const API_KEY = config.heartstone.APIKey as string;
 
 const client = axios.create({
   baseURL: BASE_URL,
   responseType: 'json',
   headers: {
-    'x-rapidapi-host': BASE_URL,
+    'x-rapidapi-host': HOST,
     'x-rapidapi-key': API_KEY
   }
 });

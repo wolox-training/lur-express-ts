@@ -36,6 +36,7 @@ export interface IConfig {
   };
   heartstone: {
     baseURL: ENV_VAR;
+    host: ENV_VAR;
     APIKey: ENV_VAR;
   };
 }
