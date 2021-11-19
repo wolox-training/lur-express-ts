@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import HttpStatus from 'http-status-codes';
 import userService from '../services/users';
 import { User } from '../models/user';
-import { notFoundError } from '../errors';
+import { badRequest, databaseError, notFoundError, unprocessableEntity } from '../errors';
 import { userValidations, passwordEncrypt } from '../utils/users';
 import logger from '../logger';
 
@@ -30,16 +30,14 @@ export async function createUser(req: Request, res: Response, next: NextFunction
   const { firstName, lastName, email, password } = req.body;
 
   if (!firstName || !lastName || !email || !password) {
-    return res
-      .status(HttpStatus.BAD_REQUEST)
-      .send({ message: 'firstName, lastName, email and password are required' });
+    next(badRequest);
   }
 
   const pendingValidations = await userValidations(firstName, lastName, email, password);
 
   if (pendingValidations) {
     logger.error(`createUser: user creation failed ${pendingValidations}`);
-    return res.status(HttpStatus.BAD_REQUEST).send({ message: pendingValidations });
+    next(unprocessableEntity);
   }
 
   userService
@@ -55,6 +53,6 @@ export async function createUser(req: Request, res: Response, next: NextFunction
     })
     .catch(() => {
       logger.error('createUser: error saving to database');
-      next();
+      next(databaseError);
     });
 }
