@@ -32,6 +32,69 @@ describe('users', () => {
           done();
         });
     });
+    it('should return an error when the email is already in use', (done: jest.DoneCallback) => {
+      request(app)
+        .post('/users')
+        .send({
+          firstName: 'Jane',
+          lastName: 'Doe',
+          email: 'janedoe@wolox.com',
+          password: 'example123'
+        })
+        .expect(201)
+        .then(() => {
+          request(app)
+            .post('/users')
+            .send({
+              firstName: 'Jane',
+              lastName: 'Doe',
+              email: 'janedoe@wolox.com',
+              password: 'example123'
+            })
+            .then((response: request.Response) => {
+              expect(response.status).toBe(500);
+              expect(response.body).not.toBeNull();
+              done();
+            });
+        });
+    });
+    it('should return an error when the password does not meet the restrictions', (done: jest.DoneCallback) => {
+      request(app)
+        .post('/users')
+        .send({
+          firstName: 'Best',
+          lastName: 'Team',
+          email: 'bestteam@wolox.com',
+          password: '123BT'
+        })
+        .then((response: request.Response) => {
+          expect(response.status).toBe(422);
+          expect(response.body).not.toBeNull();
+          expect(response.body).toHaveProperty('message');
+          done();
+        });
+    });
+    it('should return an error when required data is missing', (done: jest.DoneCallback) => {
+      request(app)
+        .post('/users')
+        .send({
+          lastName: 'Doe',
+          email: 'johndoe@wolox.com',
+          password: 'example123'
+        })
+        .then((response: request.Response) => {
+          expect(response.status).toBe(422);
+          expect(response.body).not.toBeNull();
+          expect(response.body).toHaveProperty('message');
+          expect(response.body).toEqual(
+            expect.objectContaining({
+              message: expect.any(String),
+              errors: expect.any(Array)
+            })
+          );
+          done();
+        });
+    });
     describe('/users/:id GET', () => {
       it('should return user with id 1', (done: jest.DoneCallback) => {
         request(app)

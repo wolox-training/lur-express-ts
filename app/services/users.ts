@@ -7,7 +7,13 @@ export function findUser(options?: FindConditions<User>): Promise<User | undefin
   return userRepository().findOne(options);
 }
 
-export function createAndSave(user: User): Promise<User> {
+export async function createAndSave(user: User): Promise<User> {
+  const { email } = user;
+  const userData = await findUser({ email });
+  if (userData) {
+    throw new Error('email is already use');
+  }
+
   return userRepository().save(user);
 }
 
