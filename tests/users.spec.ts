@@ -5,8 +5,8 @@ import app from '../app';
 describe('users', () => {
   beforeEach(() =>
     userRepository.createMany([
-      { firstName: 'n1', lastName: 'l1', email: 'example1@email.com', password: 'example123' },
-      { firstName: 'n2', lastName: 'l2', email: 'example2@email.com', password: 'example123' }
+      { firstName: 'John', lastName: 'Doe', email: 'example1@wolox.com', password: 'example123' },
+      { firstName: 'Jane', lastName: 'Doe', email: 'example2@wolox.com', password: 'example123' }
     ])
   );
   describe('/users GET', () => {
@@ -24,10 +24,10 @@ describe('users', () => {
     it('should create an user', (done: jest.DoneCallback) => {
       request(app)
         .post('/users')
-        .send({ firstName: 'n3', lastName: 'l3', email: 'example3@email.com', password: 'example123' })
+        .send({ firstName: 'Jhon', lastName: 'Doe', email: 'example3@wolox.com', password: 'example123' })
         .expect(201)
         .then(async () => {
-          const user = await userRepository.findUser({ email: 'example3@email.com' });
+          const user = await userRepository.findUser({ email: 'example3@wolox.com' });
           expect(user).not.toBeNull();
           done();
         });

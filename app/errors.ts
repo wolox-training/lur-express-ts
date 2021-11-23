@@ -18,3 +18,12 @@ export const alreadyExistError = createInternalError(ALREADY_EXIST_ERROR, HTTP_C
 
 export const EXTERNAL_API_ERROR = 'external_api_error';
 export const externalApiError = createInternalError(EXTERNAL_API_ERROR, HTTP_CODES.NOT_FOUND);
+
+export const BAD_REQUEST = 'bad_request';
+export const badRequest = createInternalError(BAD_REQUEST, HTTP_CODES.BAD_REQUEST);
+
+export const UNPROCESSABLE_ENTITY_ERROR = 'unprocessable_entity';
+export const unprocessableEntity = createInternalError(
+  UNPROCESSABLE_ENTITY_ERROR,
+  HTTP_CODES.UNPROCESSABLE_ENTITY
+);
