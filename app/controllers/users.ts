@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import HttpStatus from 'http-status-codes';
 import userService from '../services/users';
 import { User } from '../models/user';
-import { databaseError, notFoundError } from '../errors';
+import { databaseError, notFoundError, unprocessableEntity } from '../errors';
 import { passwordEncrypt } from '../utils/passwordEncrypt';
 import logger from '../logger';
 
@@ -25,8 +25,12 @@ export function getUserById(req: Request, res: Response, next: NextFunction): Pr
     .catch(next);
 }
 
-export function createUser(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+export async function createUser(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
   const { firstName, lastName, email, password } = req.body;
+  const userData = await userService.findUser({ email });
+  if (userData) {
+    next(unprocessableEntity);
+  }
   return userService
     .createAndSave({
       firstName,
