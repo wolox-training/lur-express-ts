@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import HttpStatus from 'http-status-codes';
 import userService from '../services/users';
 import { User } from '../models/user';
-import { badRequest, databaseError, notFoundError, unprocessableEntity } from '../errors';
-import { userValidations, passwordEncrypt } from '../utils/users';
+import { databaseError, notFoundError, unprocessableEntity } from '../errors';
+import { passwordEncrypt } from '../utils/password_encrypt';
 import logger from '../logger';
 
 export function getUsers(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
@@ -25,22 +25,13 @@ export function getUserById(req: Request, res: Response, next: NextFunction): Pr
     .catch(next);
 }
 
-// eslint-disable-next-line consistent-return
 export async function createUser(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
   const { firstName, lastName, email, password } = req.body;
-
-  if (!firstName || !lastName || !email || !password) {
-    next(badRequest);
-  }
-
-  const pendingValidations = await userValidations(firstName, lastName, email, password);
-
-  if (pendingValidations) {
-    logger.error(`createUser: user creation failed ${pendingValidations}`);
+  const userData = await userService.findUser({ email });
+  if (userData) {
     next(unprocessableEntity);
   }
-
-  userService
+  return userService
     .createAndSave({
       firstName,
       lastName,
