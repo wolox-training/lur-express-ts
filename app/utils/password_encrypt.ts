@@ -8,5 +8,3 @@ export function passwordEncrypt(password: string): string {
   const salt = bcryptjs.genSaltSync(10);
   return bcryptjs.hashSync(password, salt);
 }
-
-export default { passwordEncrypt };

@@ -1,6 +1,6 @@
 import { ClassType } from 'class-transformer-validator';
 import { NextFunction, Request, Response } from 'express';
-import { usersValidations } from '../utils/usersValidations';
+import { usersValidations } from '../utils/users_validations';
 
 export function usersHandleMiddleware<T extends object>(
   classType: ClassType<T>,

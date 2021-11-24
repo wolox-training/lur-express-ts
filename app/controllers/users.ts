@@ -3,7 +3,7 @@ import HttpStatus from 'http-status-codes';
 import userService from '../services/users';
 import { User } from '../models/user';
 import { databaseError, notFoundError, unprocessableEntity } from '../errors';
-import { passwordEncrypt } from '../utils/passwordEncrypt';
+import { passwordEncrypt } from '../utils/password_encrypt';
 import logger from '../logger';
 
 export function getUsers(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
