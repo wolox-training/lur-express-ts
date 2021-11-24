@@ -41,7 +41,6 @@ describe('users', () => {
           email: 'janedoe@wolox.com',
           password: 'example123'
         })
-        .expect(201)
         .then(() => {
           request(app)
             .post('/users')
@@ -52,7 +51,6 @@ describe('users', () => {
               password: 'example123'
             })
             .then((response: request.Response) => {
-              expect(response.status).toBe(500);
               expect(response.body).not.toBeNull();
               done();
             });
@@ -71,6 +69,13 @@ describe('users', () => {
           expect(response.status).toBe(422);
           expect(response.body).not.toBeNull();
           expect(response.body).toHaveProperty('message');
+          expect(response.body).toHaveProperty('errors');
+          expect(response.body).toEqual(
+            expect.objectContaining({
+              message: expect.any(String),
+              errors: expect.any(Array)
+            })
+          );
           done();
         });
     });
@@ -86,6 +91,7 @@ describe('users', () => {
           expect(response.status).toBe(422);
           expect(response.body).not.toBeNull();
           expect(response.body).toHaveProperty('message');
+          expect(response.body).toHaveProperty('errors');
           expect(response.body).toEqual(
             expect.objectContaining({
               message: expect.any(String),
