@@ -53,4 +53,15 @@ export function passwordEncrypt(password: string): string {
   return bcryptjs.hashSync(password, salt);
 }
 
-export default { userValidations, passwordEncrypt };
+export function passwordMatch(requestPassword: string, userPassword: string): boolean {
+  if (!requestPassword) {
+    throw new Error('requestPassword is required');
+  }
+  if (!userPassword) {
+    throw new Error('userPassword is required');
+  }
+
+  return bcryptjs.compareSync(requestPassword, userPassword);
+}
+
+export default { userValidations, passwordEncrypt, passwordMatch };

@@ -1,7 +1,7 @@
 import { Application } from 'express';
 
 import { healthCheck } from './controllers/healthCheck';
-import { getUsers, getUserById, createUser } from './controllers/users';
+import { getUsers, getUserById, createUser, authUser } from './controllers/users';
 import { getTodos } from './controllers/todos';
 import { getCardsInfo, getAllCards } from './controllers/cards';
 
@@ -13,4 +13,5 @@ export const init = (app: Application): void => {
   app.get('/todos', getTodos);
   app.get('/info', getCardsInfo);
   app.get('/cards', getAllCards);
+  app.post('/users/sesions', authUser);
 };
