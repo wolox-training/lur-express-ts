@@ -2,10 +2,10 @@ import { NextFunction, Request, Response } from 'express';
 import HttpStatus from 'http-status-codes';
 import userService from '../services/users';
 import { User } from '../models/user';
-import { databaseError, notFoundError, unprocessableEntity } from '../errors';
-import { passwordEncrypt } from '../utils/password_encrypt';
+import { databaseError, notFoundError, unprocessableEntity, authenticationError } from '../errors';
+import { passwordEncrypt, passwordMatch } from '../utils/password_encrypt';
 import logger from '../logger';
-import {getToken} from "../utils/jwt";
+import { getToken } from '../utils/jwt';
 
 export function getUsers(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
   return userService
@@ -53,24 +53,22 @@ export async function authUser(req: Request, res: Response, next: NextFunction):
   const { email, password } = req.body;
 
   try {
-    const user: User | undefined = await userService.findUser({email});
+    const user: User | undefined = await userService.findUser({ email });
 
     if (!user) {
-      next(authenticationError('username or password are invalid'));
+      next(authenticationError('email or password are invalid'));
+      return;
     }
 
-    // @ts-ignore
     if (!passwordMatch(password, user.password)) {
-      next(authenticationError('username or password are invalid'));
+      next(authenticationError('email or password are invalid'));
+      return;
     }
 
-    const token = getToken(user?.id, user?.email)
-    res.json({token})
-
-  }
-  catch(error){
+    const token = getToken(user);
+    res.status(HttpStatus.OK).send({ token });
+  } catch (error) {
     logger.error(`authUser error ${error}`);
     next(databaseError(error));
   }
-
 }
