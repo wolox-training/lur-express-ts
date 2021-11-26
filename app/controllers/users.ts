@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import HttpStatus from 'http-status-codes';
 import userService from '../services/users';
 import { User } from '../models/user';
-import { databaseError, notFoundError, unprocessableEntity, authenticationError } from '../errors';
+import { databaseError, notFoundError, unprocessableEntity, authenticationError, AUTHENTICATION_ERROR } from '../errors';
 import { passwordEncrypt, passwordMatch } from '../utils/password_encrypt';
 import logger from '../logger';
 import { getToken } from '../utils/jwt';
@@ -56,12 +56,12 @@ export async function authUser(req: Request, res: Response, next: NextFunction):
     const user: User | undefined = await userService.findUser({ email });
 
     if (!user) {
-      next(authenticationError('email or password are invalid'));
+      next(authenticationError(AUTHENTICATION_ERROR));
       return;
     }
 
     if (!passwordMatch(password, user.password)) {
-      next(authenticationError('email or password are invalid'));
+      next(authenticationError(AUTHENTICATION_ERROR));
       return;
     }
 
