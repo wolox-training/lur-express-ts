@@ -156,7 +156,7 @@ describe('users', () => {
             .then((response: request.Response) => {
               expect(response.body).not.toBeNull();
               expect(response.body).toHaveProperty('message');
-              expect(response.body.message).toBe('email or password are invalid');
+              expect(response.body.message).toBe('invalid credentials');
               done();
             });
         });

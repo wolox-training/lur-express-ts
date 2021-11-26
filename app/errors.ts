@@ -27,3 +27,5 @@ export const unprocessableEntity = createInternalError(
   UNPROCESSABLE_ENTITY_ERROR,
   HTTP_CODES.UNPROCESSABLE_ENTITY
 );
+
+export const INVALID_CREDENTIALS = 'invalid credentials';
