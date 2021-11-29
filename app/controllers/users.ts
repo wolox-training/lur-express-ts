@@ -2,9 +2,16 @@ import { NextFunction, Request, Response } from 'express';
 import HttpStatus from 'http-status-codes';
 import userService from '../services/users';
 import { User } from '../models/user';
-import { databaseError, notFoundError, unprocessableEntity } from '../errors';
-import { passwordEncrypt } from '../utils/password_encrypt';
+import {
+  databaseError,
+  notFoundError,
+  unprocessableEntity,
+  authenticationError,
+  INVALID_CREDENTIALS
+} from '../errors';
+import { passwordEncrypt, passwordMatch } from '../utils/password_encrypt';
 import logger from '../logger';
+import { getToken } from '../utils/jwt';
 
 export function getUsers(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
   return userService
@@ -46,4 +53,28 @@ export async function createUser(req: Request, res: Response, next: NextFunction
       logger.error('createUser: error saving to database');
       next(databaseError);
     });
+}
+
+export async function authUser(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+  const { email, password } = req.body;
+
+  try {
+    const user: User | undefined = await userService.findUser({ email });
+
+    if (!user) {
+      next(authenticationError(INVALID_CREDENTIALS));
+      return;
+    }
+
+    if (!passwordMatch(password, user.password)) {
+      next(authenticationError(INVALID_CREDENTIALS));
+      return;
+    }
+
+    const token = getToken(user);
+    res.status(HttpStatus.OK).send({ token });
+  } catch (error) {
+    logger.error(`authUser error ${error}`);
+    next(databaseError(error));
+  }
 }

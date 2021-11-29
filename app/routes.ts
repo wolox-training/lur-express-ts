@@ -1,10 +1,11 @@
 import { Application } from 'express';
 import { healthCheck } from './controllers/healthCheck';
-import { getUsers, getUserById, createUser } from './controllers/users';
+import { getUsers, getUserById, createUser, authUser } from './controllers/users';
 import { getTodos } from './controllers/todos';
 import { getCardsInfo, getAllCards } from './controllers/cards';
 import { usersHandleMiddleware } from './middlewares/users';
 import { User } from './schemas/users';
+import { Auth } from './schemas/auth';
 import { HTTP_CODES } from './constants';
 
 export const init = (app: Application): void => {
@@ -15,4 +16,5 @@ export const init = (app: Application): void => {
   app.get('/todos', getTodos);
   app.get('/info', getCardsInfo);
   app.get('/cards', getAllCards);
+  app.post('/users/sessions', [usersHandleMiddleware(Auth, HTTP_CODES.UNAUTHORIZED)], authUser);
 };
